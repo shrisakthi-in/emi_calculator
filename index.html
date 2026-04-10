@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMI Calculator — Smart Prepayment Advisor</title>
+    <meta name="description"
+        content="Free EMI calculator with prepayment intelligence, golden month finder, and diminishing returns analysis. Save lakhs in interest with smart prepayment strategies.">
+    <meta name="keywords"
+        content="EMI Calculator, Loan Prepayment, Interest Savings, Home Loan, Personal Loan, Debt Free">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode"
+        aria-label="Toggle Dark/Light Mode">☀️</button>
+    <div class="app">
+
+        <div class="header">
+            <h1>💰 EMI Smart Advisor</h1>
+            <p>Loan calculator with prepayment intelligence &amp; diminishing returns analysis</p>
+        </div>
+
+        <!-- ── LOAN PARAMETERS ──────────────────────────────────── -->
+        <div class="card" style="margin-bottom:1rem">
+            <div class="card-title"><span class="dot"></span> 📋 Loan Parameters</div>
+            <div class="grid3">
+                <div class="field">
+                    <label>Principal Amount (₹)</label>
+                    <input type="text" id="principal" value="50,00,000" inputmode="numeric" autocomplete="off"
+                        placeholder="e.g. 50,00,000">
+                </div>
+                <div class="field">
+                    <label>Annual Interest Rate (%)</label>
+                    <input type="number" id="rate" value="8.5" step="0.05" oninput="debouncedCalc()">
+                </div>
+                <div class="field">
+                    <label>
+                        Loan Tenure (months)
+                        <span class="tenure-hint" id="tenure-hint"></span>
+                    </label>
+                    <input type="number" id="tenure" value="240" step="12" min="1" oninput="debouncedCalc()">
+                </div>
+            </div>
+            <div class="grid3">
+                <div class="stat" id="emi-stat">
+                    <div class="stat-label">Monthly EMI</div>
+                    <div class="stat-value accent mono" id="disp-emi">₹0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Total Interest</div>
+                    <div class="stat-value warn mono" id="disp-interest">₹0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Total Payment</div>
+                    <div class="stat-value mono" id="disp-total">₹0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PREPAYMENT STRATEGY ──────────────────────────────── -->
+        <div class="section-divider">⚡ Prepayment Strategy</div>
+
+        <div class="card" style="margin-bottom:1rem">
+            <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <div><span class="dot" style="background:var(--accent2)"></span> 🛠️ Configure Prepayments</div>
+                <div class="toggle-group small" style="margin:0; transform: scale(0.85); transform-origin: right;">
+                    <button class="toggle-btn active" id="btn-dec-tenure" onclick="setPrepayEffect('tenure')">Decrease
+                        Tenure</button>
+                    <button class="toggle-btn" id="btn-dec-emi" onclick="setPrepayEffect('emi')">Decrease EMI</button>
+                </div>
+            </div>
+
+            <div class="tab-bar">
+                <button class="tab active" id="tab-one-time" onclick="switchMode('one-time')">One-time</button>
+                <button class="tab" id="tab-monthly" onclick="switchMode('monthly')">Monthly (range)</button>
+                <button class="tab" id="tab-annual" onclick="switchMode('annual')">Annual</button>
+                <button class="tab" id="tab-custom" onclick="switchMode('custom')">Custom schedule</button>
+            </div>
+
+            <!-- ONE-TIME -->
+            <div class="prepay-section active" id="mode-one-time">
+                <div class="grid2">
+                    <div class="field">
+                        <label>Prepayment Amount (₹)</label>
+                        <input type="text" id="ot-amount" placeholder="e.g. 5,00,000" inputmode="numeric"
+                            oninput="fmtInputAmount(this); updateTabIndicators(); debouncedCalc()">
+                    </div>
+                    <div class="field">
+                        <label>At Month #</label>
+                        <input type="number" id="ot-month" placeholder="e.g. 12" step="1" min="1"
+                            oninput="updateTabIndicators(); debouncedCalc()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- MONTHLY RANGE -->
+            <div class="prepay-section" id="mode-monthly">
+                <div class="grid3">
+                    <div class="field">
+                        <label>Extra per month (₹)</label>
+                        <input type="text" id="m-amount" placeholder="e.g. 20,000" inputmode="numeric"
+                            oninput="fmtInputAmount(this); updateTabIndicators(); debouncedCalc()">
+                    </div>
+                    <div class="field">
+                        <label>From month</label>
+                        <input type="number" id="m-from" placeholder="e.g. 1" step="1" min="1"
+                            oninput="updateTabIndicators(); debouncedCalc()">
+                    </div>
+                    <div class="field">
+                        <label>To month (0 = end)</label>
+                        <input type="number" id="m-to" placeholder="0 = entire tenure" step="1" min="0"
+                            oninput="updateTabIndicators(); debouncedCalc()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANNUAL -->
+            <div class="prepay-section" id="mode-annual">
+                <div class="grid2">
+                    <div class="field">
+                        <label>Annual prepayment (₹)</label>
+                        <input type="text" id="a-amount" placeholder="e.g. 1,00,000" inputmode="numeric"
+                            oninput="fmtInputAmount(this); updateTabIndicators(); debouncedCalc()">
+                    </div>
+                    <div class="field">
+                        <label>Month of year (1–12)</label>
+                        <input type="number" id="a-month-of-year" placeholder="e.g. 3" step="1" min="1" max="12"
+                            oninput="updateTabIndicators(); debouncedCalc()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CUSTOM SCHEDULE -->
+            <div class="prepay-section" id="mode-custom">
+                <div id="custom-list"></div>
+                <button class="add-prepay-btn" onclick="addCustomRow()">+ Add prepayment row</button>
+            </div>
+            <div
+                style="margin-top:1.25rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap; color: var(--dim); font-size: 0.75rem;">
+                <div style="display:flex;align-items:center;gap:4px;flex:1">
+                    <span class="dot"
+                        style="background:var(--accent); width:8px; height:8px; display:inline-block; border-radius:50%"></span>
+                    Calculations update automatically as you type
+                </div>
+            </div>
+        </div>
+
+        <!-- ── RESULTS ───────────────────────────────────────────── -->
+        <div id="results" style="display:none">
+
+            <!-- Impact summary -->
+            <div class="section-divider"
+                style="display:flex; justify-content: space-between; align-items: center; width: 100%;">
+                <span>📊 Impact Analysis</span>
+                <button class="btn" id="share-btn" onclick="copyShareLink()"
+                    style="padding: 0.4rem 0.8rem; font-size: 0.72rem; letter-spacing: 0; text-transform: none; font-weight: 500; border-color: var(--border2); background: var(--surface3); color: var(--text);">
+                    🔗 Share Scenario
+                </button>
+            </div>
+            <div class="grid3" style="margin-bottom:1rem">
+                <div class="stat">
+                    <div class="stat-label">Interest Saved</div>
+                    <div class="stat-value green mono" id="saved-interest">₹0</div>
+                    <div class="stat-sub" id="saved-pct"></div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Tenure Reduced</div>
+                    <div class="stat-value gold mono" id="saved-tenure">0 months</div>
+                    <div class="stat-sub" id="saved-tenure-sub"></div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">New Payoff</div>
+                    <div class="stat-value accent mono" id="new-payoff">—</div>
+                    <div class="stat-sub" id="old-payoff"></div>
+                </div>
+            </div>
+
+            <!-- Golden number (auto-shown) -->
+            <div id="golden-box" style="display:none;margin-bottom:1rem">
+                <div class="golden-zone">
+                    <div>
+                        <div class="golden-number" id="golden-num">—</div>
+                        <div class="golden-label">Golden Month</div>
+                        <div class="golden-tag" id="golden-tag">Prepay before this</div>
+                    </div>
+                    <div class="golden-desc" id="golden-desc"></div>
+                </div>
+            </div>
+
+            <!-- Diminishing returns (auto-shown) -->
+            <div id="diminish-box" style="display:none;margin-bottom:1rem">
+                <div class="card">
+                    <div class="card-title"><span class="dot" style="background:var(--warn)"></span> Prepayment
+                        Diminishing Returns</div>
+                    <div id="diminish-content"></div>
+                </div>
+            </div>
+
+            <!-- Balance chart -->
+            <div class="card" style="margin-bottom:1rem">
+                <div class="card-title"><span class="dot" style="background:var(--accent2)"></span> Balance Comparison
+                </div>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="btn-balance" onclick="switchChart('balance')">Balance over
+                        time</button>
+                    <button class="toggle-btn" id="btn-breakdown" onclick="switchChart('breakdown')">Principal vs
+                        Interest</button>
+                    <button class="toggle-btn" id="btn-savings" onclick="switchChart('savings')">Cumulative
+                        savings</button>
+                </div>
+                <div class="chart-wrap" style="height:280px"><canvas id="mainChart"></canvas></div>
+            </div>
+
+            <!-- Insights -->
+            <div id="insights-box" style="margin-bottom:1rem"></div>
+
+            <!-- Amortization table -->
+            <div class="card">
+                <div class="card-title"><span class="dot" style="background:var(--dim)"></span> 📅 Amortization Schedule
+                </div>
+                <p class="note" style="margin-bottom:0.75rem">
+                    Monthly breakdown. ⭐ = prepayment month.
+                    <span id="golden-note-month" style="color:var(--gold);font-weight:500;">Month —</span> = Golden
+                    Milestone (Principal > Interest).
+                </p>
+                <div class="schedule-wrap">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>EMI Paid</th>
+                                <th>Prepaid</th>
+                                <th>Interest</th>
+                                <th>Principal</th>
+                                <th>Balance</th>
+                                <th>Saved vs Base</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div><!-- /results -->
+
+    </div><!-- /app -->
+
+    <script src="app.js"></script>
+</body>
+
+</html>

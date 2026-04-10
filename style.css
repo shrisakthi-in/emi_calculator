@@ -1,0 +1,806 @@
+:root {
+    --bg: #0f0f12;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --surface3: #26262e;
+    --border: rgba(255, 255, 255, 0.07);
+    --border2: rgba(255, 255, 255, 0.12);
+    --text: #f0f0f4;
+    --muted: #8888a0;
+    --dim: #555568;
+    --accent: #7c6df0;
+    --accent2: #5ee8b0;
+    --warn: #f0a05e;
+    --danger: #f05e72;
+    --gold: #f0d05e;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Sora', sans-serif;
+    --transition: 0.2s ease-in-out;
+}
+
+body.light-theme {
+    --bg: #f8f9fc;
+    --surface: #ffffff;
+    --surface2: #f1f3f9;
+    --surface3: #e8ebf3;
+    --border: rgba(0, 0, 0, 0.05);
+    --border2: rgba(0, 0, 0, 0.08);
+    --text: #1a1a24;
+    --muted: #555568;
+    --dim: #8888a0;
+    --accent: #6552e6;
+    /* slightly deeper violet for light bg */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background var(--transition), color var(--transition);
+}
+
+.app {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #f0f0f4 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header p {
+    color: var(--muted);
+    font-size: 0.875rem;
+    margin-top: 0.4rem;
+}
+
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.grid3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 680px) {
+
+    .grid2,
+    .grid3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: background var(--transition), border-color var(--transition);
+}
+
+.card-title {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.card-title .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+}
+
+.field {
+    margin-bottom: 1rem;
+}
+
+.field label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.02em;
+}
+
+.field input[type=number],
+.field input[type=text],
+.field select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 0.6rem 0.875rem;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+}
+
+.field input::-webkit-outer-spin-button,
+.field input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.field input:focus,
+.field select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124, 109, 240, 0.12);
+}
+
+.field select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238888a0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.875rem center;
+    padding-right: 2rem;
+}
+
+/* Tenure years hint — lives inside the label on the same line */
+.tenure-hint {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--accent2);
+    margin-left: 6px;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+    font-weight: 400;
+}
+
+.range-wrap {
+    position: relative;
+}
+
+.field input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.field input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(124, 109, 240, 0.2);
+}
+
+.field input[type=range]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+}
+
+.range-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--dim);
+    margin-top: 0.3rem;
+}
+
+.range-val {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-align: right;
+    margin-bottom: 0.3rem;
+}
+
+.stat {
+    text-align: center;
+    padding: 1.25rem 1rem;
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.stat-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.stat-sub {
+    font-size: 0.7rem;
+    color: var(--dim);
+    margin-top: 0.25rem;
+}
+
+.stat-value.accent {
+    color: var(--accent);
+}
+
+.stat-value.green {
+    color: var(--accent2);
+}
+
+.stat-value.warn {
+    color: var(--warn);
+}
+
+.stat-value.gold {
+    color: var(--gold);
+}
+
+/* ── Prepayment tab bar ─────────────────────────── */
+.tab-bar {
+    display: flex;
+    gap: 4px;
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 1.25rem;
+}
+
+.tab {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.tab.active {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border2);
+}
+
+/* Active indicator dot on a prepayment tab */
+.tab-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+    flex-shrink: 0;
+    box-shadow: 0 0 5px var(--accent2);
+    animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(0.75);
+    }
+}
+
+.prepay-section {
+    display: none;
+}
+
+.prepay-section.active {
+    display: block;
+}
+
+#theme-toggle {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition);
+    z-index: 100;
+}
+
+#theme-toggle:hover {
+    background: var(--surface3);
+    transform: scale(1.05);
+}
+
+@media (max-width: 680px) {
+    #theme-toggle {
+        top: 1rem;
+        right: 1rem;
+    }
+}
+
+/* ── Buttons ─────────────────────────────────────── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn:hover {
+    background: var(--surface2);
+}
+
+.btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.btn.primary:hover {
+    opacity: 0.9;
+}
+
+/* ── Section divider ─────────────────────────────── */
+.section-divider {
+    margin: 2rem 0 1.25rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dim);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* ── Insight boxes ───────────────────────────────── */
+.insight-box {
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 0.875rem;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    border: 1px solid;
+}
+
+.insight-box.gold {
+    background: rgba(240, 208, 94, 0.06);
+    border-color: rgba(240, 208, 94, 0.2);
+}
+
+.insight-box.green {
+    background: rgba(94, 232, 176, 0.06);
+    border-color: rgba(94, 232, 176, 0.2);
+}
+
+.insight-box.warn {
+    background: rgba(240, 160, 94, 0.06);
+    border-color: rgba(240, 160, 94, 0.2);
+}
+
+.insight-box.danger {
+    background: rgba(240, 94, 114, 0.06);
+    border-color: rgba(240, 94, 114, 0.2);
+}
+
+.insight-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.insight-content p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+}
+
+.insight-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.insight-title.gold {
+    color: var(--gold);
+}
+
+.insight-title.green {
+    color: var(--accent2);
+}
+
+.insight-title.warn {
+    color: var(--warn);
+}
+
+.insight-title.danger {
+    color: var(--danger);
+}
+
+/* ── Chart ───────────────────────────────────────── */
+.chart-wrap {
+    position: relative;
+    width: 100%;
+}
+
+/* ── Amortization table ──────────────────────────── */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    font-family: var(--mono);
+}
+
+.schedule-table th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    color: var(--muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+}
+
+.schedule-table td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    color: var(--text);
+}
+
+.schedule-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.schedule-table td.green {
+    color: var(--accent2);
+}
+
+.schedule-table td.warn {
+    color: var(--warn);
+}
+
+.schedule-table td.gold {
+    color: var(--gold);
+}
+
+.schedule-table td.accent {
+    color: var(--accent);
+}
+
+.schedule-wrap {
+    max-height: 320px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface3) transparent;
+}
+
+/* ── Badges ──────────────────────────────────────── */
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-family: var(--mono);
+}
+
+.badge.gold {
+    background: rgba(240, 208, 94, 0.15);
+    color: var(--gold);
+    border: 1px solid rgba(240, 208, 94, 0.3);
+}
+
+.badge.green {
+    background: rgba(94, 232, 176, 0.15);
+    color: var(--accent2);
+    border: 1px solid rgba(94, 232, 176, 0.3);
+}
+
+.badge.warn {
+    background: rgba(240, 160, 94, 0.15);
+    color: var(--warn);
+    border: 1px solid rgba(240, 160, 94, 0.3);
+}
+
+.badge.dim {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--dim);
+    border: 1px solid var(--border);
+}
+
+/* ── Prepay UI ───────────────────────────────────── */
+.add-prepay-btn {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px dashed var(--border2);
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 0.75rem;
+}
+
+.add-prepay-btn:hover {
+    background: var(--surface2);
+    color: var(--text);
+}
+
+.prepay-item {
+    display: grid;
+    grid-template-columns: 80px 1fr 100px 36px;
+    gap: 8px;
+    align-items: end;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.remove-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+}
+
+.remove-btn:hover {
+    background: rgba(240, 94, 114, 0.1);
+    color: var(--danger);
+    border-color: rgba(240, 94, 114, 0.3);
+}
+
+/* ── Misc utilities ──────────────────────────────── */
+.mono {
+    font-family: var(--mono);
+}
+
+.progress-bar {
+    height: 6px;
+    background: var(--surface3);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* ── Golden zone ─────────────────────────────────── */
+.golden-zone {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
+    padding: 1.25rem;
+    border-radius: 12px;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.golden-number {
+    font-family: var(--mono);
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1;
+}
+
+.golden-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 4px;
+}
+
+.golden-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.85);
+    flex: 1;
+}
+
+.golden-tag {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    color: #fff;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+/* ── Diminishing returns ─────────────────────────── */
+.diminish-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.diminish-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    width: 80px;
+    flex-shrink: 0;
+}
+
+.diminish-track {
+    flex: 1;
+    height: 8px;
+    background: var(--surface3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.diminish-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.diminish-val {
+    font-family: var(--mono);
+    font-size: 0.73rem;
+    width: 60px;
+    text-align: right;
+}
+
+.row {
+    display: flex;
+    gap: 1rem;
+}
+
+.col {
+    flex: 1;
+}
+
+.spacer {
+    height: 1rem;
+}
+
+/* ── Chart toggle ────────────────────────────────── */
+.toggle-group {
+    display: flex;
+    gap: 4px;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 1rem;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 0.4rem 0.5rem;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+}
+
+.toggle-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border2);
+}
+
+.note {
+    font-size: 0.73rem;
+    color: var(--dim);
+    margin-top: 0.5rem;
+}
+
+.highlight-row td {
+    background: rgba(240, 208, 94, 0.12) !important;
+    border-bottom: 2px solid var(--gold) !important;
+}
+
+.highlight-row td:first-child {
+    border-left: 4px solid var(--gold);
+}
+
+.info-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(124, 109, 240, 0.1);
+    border: 1px solid rgba(124, 109, 240, 0.2);
+    color: var(--accent);
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
