@@ -175,10 +175,6 @@
             <div class="section-divider"
                 style="display:flex; justify-content: space-between; align-items: center; width: 100%;">
                 <span>📊 Impact Analysis</span>
-                <button class="btn" id="share-btn" onclick="copyShareLink()"
-                    style="padding: 0.4rem 0.8rem; font-size: 0.72rem; letter-spacing: 0; text-transform: none; font-weight: 500; border-color: var(--border2); background: var(--surface3); color: var(--text);">
-                    🔗 Share Scenario
-                </button>
             </div>
             <div class="grid3" style="margin-bottom:1rem">
                 <div class="stat">
@@ -267,6 +263,12 @@
         </div><!-- /results -->
 
     </div><!-- /app -->
+
+    <div class="floating-actions" id="floating-actions" style="display:none">
+        <button class="float-btn share" id="float-share-btn" onclick="copyShareLink()">
+            <span>🔗 Share</span>
+        </button>
+    </div>
 
     <script src="app.js"></script>
 </body>

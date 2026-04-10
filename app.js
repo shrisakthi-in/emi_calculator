@@ -96,15 +96,13 @@ function copyShareLink() {
         }).catch(err => console.log('Error sharing:', err));
     } else {
         navigator.clipboard.writeText(url).then(() => {
-            const btn = document.getElementById('share-btn');
+            const btn = document.getElementById('float-share-btn');
             const oldTxt = btn.innerHTML;
-            btn.innerHTML = '✓ Link Copied!';
-            btn.style.borderColor = 'var(--accent2)';
-            btn.style.color = 'var(--accent2)';
+            btn.innerHTML = '<span>✓ Copied!</span>';
+            btn.style.background = 'var(--accent2)';
             setTimeout(() => {
                 btn.innerHTML = oldTxt;
-                btn.style.borderColor = '';
-                btn.style.color = '';
+                btn.style.background = '';
             }, 3000);
         });
     }
@@ -113,20 +111,28 @@ function copyShareLink() {
 /* ─── Theme Toggle ──────────────────────────────────────────────── */
 function toggleTheme() {
     const body = document.body;
-    const isDark = body.classList.toggle('light-theme');
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    const isDark = body.classList.toggle('dark-theme');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateThemeIcon();
 }
 
 function updateThemeIcon() {
     const btn = document.getElementById('theme-toggle');
-    const isLight = document.body.classList.contains('light-theme');
-    btn.innerHTML = isLight ? '🌘' : '☀️';
+    const isDark = document.body.classList.contains('dark-theme');
+    btn.innerHTML = isDark ? '☀️' : '🌘';
 }
 
 function initTheme() {
-    if (localStorage.getItem('theme') === 'light') {
-        document.body.classList.add('light-theme');
+    // Check local storage first
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    } else if (savedTheme === 'light') {
+        document.body.classList.remove('dark-theme');
+    } else {
+        // Default to light, but could also check system preference
+        // For now, as per request: "Make the default UI as light / day mode"
+        document.body.classList.remove('dark-theme');
     }
     updateThemeIcon();
 }
@@ -446,6 +452,7 @@ function calculate(silent) {
     _computeDiminishingReturns(p, r, n, base);
 
     document.getElementById('results').style.display = 'block';
+    document.getElementById('floating-actions').style.display = 'flex';
 }
 
 /* ─── Insights ──────────────────────────────────────────────────── */
