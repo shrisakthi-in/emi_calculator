@@ -428,15 +428,42 @@ function calculate(silent) {
     const savedMo = base.actualMonths - with_pre.actualMonths;
     const savedPct = (savedInt / base.totalInterest * 100).toFixed(1);
 
-    document.getElementById('saved-interest').textContent = fmt(savedInt);
-    document.getElementById('saved-pct').textContent = savedPct + '% of total interest';
-    document.getElementById('saved-tenure').textContent = savedMo + ' months';
-    document.getElementById('saved-tenure-sub').textContent = (savedMo / 12).toFixed(1) + ' years earlier';
+    // Gross and Net savings calculation
+    const totalPrepaid = with_pre.months.reduce((s, m) => s + (m.prepay || 0), 0);
+    const grossSavings = savedInt + totalPrepaid;
 
-    if (currentEffect === 'emi') {
+    document.getElementById('saved-interest').textContent = fmt(grossSavings);
+    document.getElementById('saved-pct').textContent = `Total reduction in scheduled payments`;
+
+    const emiNote = document.getElementById('emi-savings-note');
+    emiNote.style.display = 'block';
+    emiNote.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px">
+            <span>Interest Gains:</span>
+            <span style="color:var(--accent2)">${fmt(savedInt)}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between">
+            <span>Principal Advanced:</span>
+            <span style="color:var(--gold)">${fmt(totalPrepaid)}</span>
+        </div>
+    `;
+
+    const tLabel = document.getElementById('tenure-label');
+    const tVal = document.getElementById('saved-tenure');
+    const tSub = document.getElementById('saved-tenure-sub');
+
+    // Always show tenure reduction here
+    tLabel.textContent = 'Tenure Reduced';
+    if (savedMo > 0) {
+        tVal.textContent = savedMo + ' months';
+        tSub.textContent = (savedMo / 12).toFixed(1) + ' years earlier';
+    } else if (currentEffect === 'emi') {
         const lastEMI = with_pre.months[with_pre.months.length - 1].currentEMI;
-        document.getElementById('saved-tenure').textContent = '—';
-        document.getElementById('saved-tenure-sub').textContent = 'EMI Reduced to ' + fmt(lastEMI);
+        tVal.textContent = '—';
+        tSub.textContent = 'Reduced to ' + fmt(lastEMI) + ' EMI';
+    } else {
+        tVal.textContent = '0 months';
+        tSub.textContent = 'No tenure reduction';
     }
 
     document.getElementById('new-payoff').textContent = with_pre.actualMonths + ' mo';
